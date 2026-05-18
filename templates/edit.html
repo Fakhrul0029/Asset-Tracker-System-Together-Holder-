@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Asset - JTDI Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        :root { --navy: #1a2a6c; --gold: #ffc107; --light: #f4f7f6; }
+        body { background-color: var(--light); font-family: 'Inter', sans-serif; }
+        .navbar { background: var(--navy); border-bottom: 4px solid var(--gold); }
+        .card { border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .form-label { font-weight: 600; color: #444; font-size: 0.9rem; }
+        .btn-update { background-color: var(--navy); color: white; font-weight: bold; }
+        .btn-update:hover { background-color: #121d4d; color: white; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark p-3 mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">JTDI ASSET TRACKER</a>
+            <a href="/" class="btn btn-outline-light btn-sm">Cancel & Exit</a>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold mb-0 text-primary">📝 Edit Asset Information</h4>
+                        <span class="badge bg-dark p-2">S/N: {{ asset.serial_number }}</span>
+                    </div>
+
+                    <form method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Asset Category</label>
+                                <select name="asset_type" class="form-select">
+                                    <option value="Laptop" {% if asset.asset_type == 'Laptop' %}selected{% endif %}>Laptop</option>
+                                    <option value="PC" {% if asset.asset_type == 'PC' %}selected{% endif %}>PC / Desktop</option>
+                                    <option value="Monitor" {% if asset.asset_type == 'Monitor' %}selected{% endif %}>Monitor</option>
+                                    <option value="Printer" {% if asset.asset_type == 'Printer' %}selected{% endif %}>Printer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tracking Number</label>
+                                <input type="text" name="tracking_number" value="{{ asset.tracking_number }}" class="form-control" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Brand / Model Name</label>
+                                <input type="text" name="cpu_name" value="{{ asset.cpu_name }}" class="form-control" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">RAM Size</label>
+                                <input type="text" name="ram_size" value="{{ asset.ram_size }}" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Storage Type/Size</label>
+                                <input type="text" name="storage_type" value="{{ asset.storage_type }}" class="form-control">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Current Location</label>
+                                <input type="text" name="location" value="{{ asset.location }}" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="Working" {% if asset.status == 'Working' %}selected{% endif %}>Working</option>
+                                    <option value="Maintenance" {% if asset.status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                                    <option value="Faulty" {% if asset.status == 'Faulty' %}selected{% endif %}>Faulty</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <div class="p-3 rounded-3" style="background-color: #f0f7ff; border: 1px dashed #0d6efd;">
+                                    <h6 class="fw-bold text-primary mb-3">🛠️ Log Maintenance / Problem Report</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Action Performed</label>
+                                            <select name="action_type" class="form-select border-primary">
+                                                <option value="General Service">General Service</option>
+                                                <option value="Hardware Upgrade">Hardware Upgrade</option>
+                                                <option value="Software Repair">Software Repair</option>
+                                                <option value="Faulty Report">Faulty Report</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label class="form-label">Comments / Work Description</label>
+                                            <textarea name="comment" class="form-control border-primary" rows="2" placeholder="Describe what was fixed or what is wrong..."></textarea>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Note: Comments will be visible on the View page history.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-update w-100 py-3 shadow-sm">
+                                    SAVE CHANGES & UPDATE HISTORY
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
