@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Asset QR Code</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class="card p-5 shadow text-center" style="max-width: 400px;">
+        <h4 class="fw-bold mb-4">Asset QR Tag</h4>
+        <img src="data:image/png;base64,{{ qr_code }}" class="img-fluid border mb-4">
+        <p class="text-muted small">Scan this code to view asset details and maintenance history instantly.</p>
+        <button onclick="window.print()" class="btn btn-primary w-100 mb-2">Print Label</button>
+        <a href="/" class="btn btn-outline-secondary w-100">Back to Dashboard</a>
+    </div>
+</body>
+</html>
