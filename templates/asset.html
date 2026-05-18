@@ -1,0 +1,29 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .header-dark { background: #212529; color: white; padding: 15px; text-align: center; border-radius: 8px 8px 0 0; }
+        .asset-card { max-width: 500px; margin: 50px auto; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .log-box { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; min-height: 100px; white-space: pre-line; border-radius: 5px; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="asset-card">
+        <div class="header-dark">🖥️ Hardware Specifications</div>
+        <div class="p-4">
+            <h5>{{ data.cpu_name }}</h5>
+            <p class="mb-1"><strong>S/N:</strong> {{ data.serial_number }}</p>
+            <p class="mb-1"><strong>RAM:</strong> {{ data.ram_size }} | <strong>Storage:</strong> {{ data.storage_type }}</p>
+            <p><strong>Location:</strong> {{ data.location }}</p>
+            <hr>
+            <h6>📜 History Log</h6>
+            <div class="log-box">{{ data.maintenance_logs if data.maintenance_logs else 'No history recorded yet.' }}</div>
+            <p class="text-muted text-center small mt-2">QR Scan Count: {{ data.scan_count }}</p>
+            <div class="d-flex justify-content-between mt-3">
+                <a href="/" class="btn btn-secondary btn-sm">Home</a>
+                <a href="/edit/{{ data.id }}" class="btn btn-warning btn-sm">Edit Asset</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
