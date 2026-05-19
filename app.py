@@ -1,6 +1,7 @@
 import os
 import io
 import csv
+import base64
 import traceback
 import qrcode
 import psycopg2
@@ -433,8 +434,9 @@ def login():
                 'full_name': user['full_name'] or user['username'],
                 'email': user['email']
             })
-            cur.execute(
-                "INSERT INTO login_logs (full_name, email) VALUES (%s, %s)",
+            cur.execute("""
+                INSERT INTO login_logs (full_name, email) VALUES (%s, %s)
+                """,
                 (user['full_name'] or user['username'], user['email'])
             )
             conn.commit()
@@ -509,6 +511,7 @@ def export_excel():
         return redirect(url_for('login'))
 
     conn = get_db_connection()
+    cur = conn.cursor()
     query = """
         SELECT asset_type, tracking_number, cpu_name, serial_number,
                ram_size, storage_type, location, status, description,
@@ -517,10 +520,17 @@ def export_excel():
     """
     if session.get('role') != 'Admin':
         query += " AND is_deleted = FALSE"
-
-    df = pd.read_sql(query, conn)
+    query += " ORDER BY id DESC"
+    
+    cur.execute(query)
+    rows = cur.fetchall()
+    column_names = [desc[0] for desc in cur.description]
+    
+    cur.close()
     conn.close()
 
+    df = pd.DataFrame(rows, columns=column_names)
+    
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Assets')
