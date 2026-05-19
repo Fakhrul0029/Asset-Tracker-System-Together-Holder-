@@ -7,17 +7,28 @@
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-dark p-3 mb-4">
         <div class="container d-flex justify-content-between">
-            <span class="navbar-brand">User Management</span>
-            <a href="/" class="btn btn-outline-light">Back</a>
+            <span class="navbar-brand">User management</span>
+            <div>
+                <a href="/admin" class="btn btn-outline-warning btn-sm me-2">Admin home</a>
+                <a href="/" class="btn btn-outline-light btn-sm">Dashboard</a>
+            </div>
         </div>
     </nav>
     <div class="container">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <div class="row">
             <div class="col-md-4">
                 <div class="card p-3 shadow-sm">
-                    <h5>Register New User</h5>
-                    <form method="POST">
-                        <input type="text" name="full_name" placeholder="Full Name" class="form-control mb-2" required>
+                    <h5>Register user</h5>
+                    <form method="POST" action="/admin/users">
+                        <input type="text" name="full_name" placeholder="Full name" class="form-control mb-2" required>
                         <input type="text" name="username" placeholder="Username" class="form-control mb-2" required>
                         <input type="email" name="email" placeholder="Email" class="form-control mb-2" required>
                         <input type="password" name="password" placeholder="Password" class="form-control mb-2" required>
@@ -32,19 +43,36 @@
             <div class="col-md-8">
                 <div class="card shadow-sm">
                     <table class="table align-middle mb-0">
-                        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {% for u in users %}
                             <tr>
-                                <td>{{ u.full_name }}</td>
+                                <td>{{ u.full_name or '-' }}</td>
+                                <td>{{ u.username }}</td>
                                 <td>{{ u.email }}</td>
-                                <td>{{ u.role }}</td>
+                                <td>
+                                    {% if u.role == 'Admin' %}
+                                        <span class="badge bg-danger">Admin</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">User</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <div class="btn-group">
                                         <a href="/admin/edit_user/{{ u.id }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form action="/admin/delete_user/{{ u.id }}" method="POST" onsubmit="return confirm('Delete user?');">
+                                        {% if u.username != 'admin' %}
+                                        <form action="/admin/delete_user/{{ u.id }}" method="POST" class="d-inline" onsubmit="return confirm('Delete user?');">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Del</button>
                                         </form>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
