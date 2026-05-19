@@ -510,38 +510,45 @@ def export_excel():
     if 'user' not in session:
         return redirect(url_for('login'))
 
-    conn = get_db_connection()
-    cur = conn.cursor()
-    query = """
-        SELECT asset_type, tracking_number, cpu_name, serial_number,
-               ram_size, storage_type, location, status, description,
-               is_deleted, scan_count, created_at
-        FROM assets WHERE 1=1
-    """
-    if session.get('role') != 'Admin':
-        query += " AND is_deleted = FALSE"
-    query += " ORDER BY id DESC"
-    
-    cur.execute(query)
-    rows = cur.fetchall()
-    column_names = [desc[0] for desc in cur.description]
-    
-    cur.close()
-    conn.close()
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        query = "SELECT * FROM assets WHERE 1=1"
+        if session.get('role') != 'Admin':
+            query += " AND is_deleted = FALSE"
+        query += " ORDER BY id DESC"
+        
+        cur.execute(query)
+        column_names = [desc[0] for desc in cur.description]
+        rows = cur.fetchall()
+        
+        cur.close()
+        conn.close()
 
-    df = pd.DataFrame(rows, columns=column_names)
-    
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Assets')
-    output.seek(0)
+        # Convert rows to list of dicts for better handling
+        data = []
+        for row in rows:
+            data.append(dict(zip(column_names, row)))
+        
+        df = pd.DataFrame(data)
+        
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Assets')
+        output.seek(0)
 
-    return send_file(
-        output,
-        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        as_attachment=True,
-        download_name=f"Assets_{datetime.now().strftime('%Y%m%d')}.xlsx"
-    )
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=f"Assets_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        )
+    except Exception as e:
+        print(f"Excel export error: {e}")
+        import traceback
+        traceback.print_exc()
+        flash(f"Error exporting to Excel: {str(e)}")
+        return redirect(url_for('index'))
 
 
 @app.route('/admin')
