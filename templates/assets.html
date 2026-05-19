@@ -9,54 +9,29 @@
     <style>
         :root { --navy: #1a2a6c; --gold: #ffc107; --light: #f8f9fa; }
         body { background-color: var(--light); font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-        
-        /* Navbar Styling */
-        .navbar { 
-            background: linear-gradient(90deg, #1a2a6c 0%, #203a43 100%); 
-            border-bottom: 4px solid var(--gold); 
+        .navbar {
+            background: linear-gradient(90deg, #1a2a6c 0%, #203a43 100%);
+            border-bottom: 4px solid var(--gold);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
-        /* Dashboard Stat Cards */
-        .stat-card { 
-            border: none; 
-            border-radius: 12px; 
-            color: white; 
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        }
+        .stat-card { border: none; border-radius: 12px; color: white; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         .stat-card:hover { transform: translateY(-3px); }
-
-        /* Professional Action Button Group (View, Edit, QR, Del) */
         .manage-group {
-            display: inline-flex;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #dee2e6;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: inline-flex; border-radius: 8px; overflow: hidden;
+            border: 1px solid #dee2e6; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .manage-group .btn {
-            padding: 0.4rem 1rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border-radius: 0;
-            border: none;
-            transition: all 0.2s;
+            padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 500;
+            border-radius: 0; border: none; transition: all 0.2s;
         }
         .btn-view { color: #0d6efd; border-right: 1px solid #dee2e6 !important; }
         .btn-view:hover { background: #f0f7ff; }
-        
         .btn-edit { color: #212529; border-right: 1px solid #dee2e6 !important; }
         .btn-edit:hover { background: #f8f9fa; }
-        
         .btn-qr { background: #212529 !important; color: white !important; }
         .btn-qr:hover { background: #000 !important; }
-        
         .btn-del { color: #dc3545; border-left: 1px solid #dee2e6 !important; }
         .btn-del:hover { background: #fff5f5; }
-
-        /* Soft Delete Visuals (Admin only) */
         .row-deleted { background-color: #fff8f8 !important; border-left: 5px solid #dc3545 !important; opacity: 0.85; }
         .table-container { background: white; border-radius: 15px; box-shadow: 0 4px 25px rgba(0,0,0,0.05); }
     </style>
@@ -69,7 +44,7 @@
                 <i class="bi bi-cpu-fill me-2 text-warning"></i>JTDI ASSET TRACKER
             </a>
             <div class="text-white small">
-                Welcome, <span class="fw-bold text-warning">{{ session.full_name }}</span> 
+                Welcome, <span class="fw-bold text-warning">{{ session.full_name }}</span>
                 <span class="mx-2">|</span>
                 <a href="/logout" class="text-white text-decoration-none">Logout</a>
             </div>
@@ -77,6 +52,18 @@
     </nav>
 
     <div class="container">
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-info alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <div class="row g-4 mb-4 text-center">
             <div class="col-md-3">
                 <div class="card stat-card p-3 bg-primary">
@@ -107,35 +94,39 @@
         <div class="card p-4 mb-4 shadow-sm border-0 rounded-4">
             <form method="GET" action="/" class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold text-muted">Search Asset</label>
-                    <input type="text" name="search" class="form-control" placeholder="S/N, ID, or Model..." value="{{ s_query }}">
+                    <label class="form-label small fw-bold text-muted">Search</label>
+                    <input type="text" name="search" class="form-control" placeholder="S/N, tracking, model, location..." value="{{ s_query }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-bold text-muted">Category</label>
                     <select name="category" class="form-select">
-                        <option value="">All Categories</option>
+                        <option value="">All</option>
                         <option value="Laptop" {{ 'selected' if c_filter == 'Laptop' }}>Laptop</option>
                         <option value="PC" {{ 'selected' if c_filter == 'PC' }}>PC / Desktop</option>
                         <option value="Monitor" {{ 'selected' if c_filter == 'Monitor' }}>Monitor</option>
+                        <option value="Printer" {{ 'selected' if c_filter == 'Printer' }}>Printer</option>
                     </select>
                 </div>
                 <div class="col-md-5">
-                    <div class="btn-group w-100 shadow-sm">
+                    <div class="btn-group w-100 shadow-sm flex-wrap">
                         <button type="submit" class="btn btn-primary fw-bold">FILTER</button>
-                        <a href="/export/excel" class="btn btn-success fw-bold">EXPORT EXCEL</a>
+                        <a href="/export" class="btn btn-outline-primary fw-bold">CSV</a>
+                        <a href="/export/excel" class="btn btn-success fw-bold">EXCEL</a>
                     </div>
                 </div>
             </form>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3 px-1">
-            <h5 class="fw-bold mb-0 text-dark">Inventory Directory</h5>
-            <div class="btn-group shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3 px-1 flex-wrap gap-2">
+            <h5 class="fw-bold mb-0 text-dark">Inventory</h5>
+            <div class="btn-group shadow-sm flex-wrap">
                 {% if session.role == 'Admin' %}
-                    <a href="/admin/users" class="btn btn-warning btn-sm fw-bold border-end border-dark">USERS</a>
+                    <a href="/admin" class="btn btn-warning btn-sm fw-bold">ADMIN</a>
+                    <a href="/admin/users" class="btn btn-outline-warning btn-sm fw-bold">USERS</a>
                     <a href="/admin/logs" class="btn btn-info btn-sm text-white fw-bold">LOGS</a>
                 {% endif %}
-                <a href="/add" class="btn btn-success btn-sm fw-bold">+ NEW ENTRY</a>
+                <a href="/activity" class="btn btn-dark btn-sm fw-bold text-white">ACTIVITY</a>
+                <a href="/add" class="btn btn-success btn-sm fw-bold">+ NEW</a>
             </div>
         </div>
 
@@ -144,7 +135,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4 py-3">Tracking ID</th>
+                            <th class="ps-4 py-3">Tracking</th>
                             <th>Details</th>
                             <th>Status</th>
                             <th class="text-center">Manage</th>
@@ -170,13 +161,12 @@
                             </td>
                             <td class="text-center">
                                 <div class="manage-group">
-                                    <a href="/view/{{ row.id }}" class="btn btn-view" title="View Details">View</a>
-                                    <a href="/edit/{{ row.id }}" class="btn btn-edit" title="Edit Asset">Edit</a>
-                                    <a href="/qr/{{ row.id }}" class="btn btn-qr" title="QR Code">QR</a>
-                                    
+                                    <a href="/view/{{ row.id }}" class="btn btn-view">View</a>
+                                    <a href="/edit/{{ row.id }}" class="btn btn-edit">Edit</a>
+                                    <a href="/qr/{{ row.id }}" class="btn btn-qr">QR</a>
                                     {% if not row.is_deleted %}
-                                    <form action="/delete/{{ row.id }}" method="POST" class="d-inline" onsubmit="return confirm('Archive this asset? It will be hidden from Users but visible to Admins.');">
-                                        <button type="submit" class="btn btn-del" title="Delete Asset">Del</button>
+                                    <form action="/delete/{{ row.id }}" method="POST" class="d-inline" onsubmit="return confirm('Archive this asset?');">
+                                        <button type="submit" class="btn btn-del">Del</button>
                                     </form>
                                     {% endif %}
                                 </div>
@@ -189,7 +179,7 @@
             {% if not data %}
             <div class="p-5 text-center text-muted">
                 <i class="bi bi-clipboard-x fs-1"></i>
-                <p class="mt-2">No inventory records found.</p>
+                <p class="mt-2">No records.</p>
             </div>
             {% endif %}
         </div>
